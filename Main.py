@@ -36,10 +36,10 @@ def main():
 
     all_sprites_list = pygame.sprite.Group()
 
-    player = model.model.Player(20, 20, 550, 6)
+    player = model.model.Player(20, 20, 500, 6)
     all_sprites_list.add(player)
 
-    enemy = model.model.Enemy(200, 200, 5, player)
+    enemy = model.model.Enemy(200, 200, 4, player)
     all_sprites_list.add(enemy)
     enemy_sprite_list = pygame.sprite.Group()
     enemy_sprite_list.add(enemy)
@@ -82,7 +82,8 @@ def main():
             # Remove bullet when it hits enemy
             for i in range(len(enemy_hit_list)):
                 bullet.kill()
-                new_enemy = model.enemy(200, 200, 5, player)
+                new_enemy = model.model.Enemy(random.randrange(1, SCREEN_WIDTH), random.randrange(1, SCREEN_HEIGHT), 4,
+                                              player)
                 enemy_sprite_list.add(new_enemy)
                 all_sprites_list.add(new_enemy)
 

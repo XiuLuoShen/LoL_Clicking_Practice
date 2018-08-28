@@ -188,6 +188,9 @@ class Bullet(pygame.sprite.Sprite):
             self.change_y = 0
             self.rect.centery = self.real_y = self.target.rect.centery
 
+        if self.change_y == 0 and self.change_x == 0:
+            self.kill()
+
 
 class Enemy(Champion):
     def __init__(self, start_x, start_y, move_speed, target):
@@ -205,5 +208,10 @@ class Enemy(Champion):
     def update_move(self):
         self.x_destination = self.target.rect.centerx
         self.y_destination = self.target.rect.centery
-        self.change_direction()
+        self.change_direction(determine_direction(self.rect.centerx, self.rect.centery, self.target.rect.centerx,
+                                                  self.target.rect.centery))
+
+    def update(self):
+        self.update_move()
+        super().update()
 
