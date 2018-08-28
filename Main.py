@@ -75,17 +75,20 @@ def main():
         all_sprites_list.update()
 
         # Calculate mechanics for each bullet
-        for bullet in bullet_list:
-            # See if it hit a block
-            enemy_hit_list = pygame.sprite.spritecollide(bullet, enemy_sprite_list, True)
+        for enemy in enemy_sprite_list:
+            # See if it gets hit by a bullet
+            enemy_hit_list = pygame.sprite.spritecollide(enemy, bullet_list, True)
 
             # Remove bullet when it hits enemy
             for i in range(len(enemy_hit_list)):
-                bullet.kill()
-                new_enemy = model.model.Enemy(random.randrange(1, SCREEN_WIDTH), random.randrange(1, SCREEN_HEIGHT), 4,
-                                              player)
-                enemy_sprite_list.add(new_enemy)
-                all_sprites_list.add(new_enemy)
+                enemy.hp -= 1
+                if enemy.hp == 0:
+                    enemy.kill()
+                    new_enemy = model.model.Enemy(random.randrange(1, SCREEN_WIDTH), random.randrange(1, SCREEN_HEIGHT),
+                                                  4, player)
+                    enemy_sprite_list.add(new_enemy)
+                    all_sprites_list.add(new_enemy)
+                    break
 
         # ALL GAME LOGIC SHOULD GO ABOVE THIS COMMENT
 
