@@ -6,6 +6,7 @@
 
 import pygame
 import model.model
+import random
 
 
 # Defining constants
@@ -81,6 +82,9 @@ def main():
             # Remove bullet when it hits enemy
             for i in range(len(enemy_hit_list)):
                 bullet.kill()
+                new_enemy = model.enemy(200, 200, 5, player)
+                enemy_sprite_list.add(new_enemy)
+                all_sprites_list.add(new_enemy)
 
         # ALL GAME LOGIC SHOULD GO ABOVE THIS COMMENT
 
