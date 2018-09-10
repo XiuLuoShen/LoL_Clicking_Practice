@@ -68,12 +68,6 @@ def main():
                     if can_attack is not None:
                         player.attack(can_attack, all_sprites_list, bullet_list)
 
-            # Clicking on an enemy to attack
-            # elif pygame.mouse.get_pressed()[0]:
-            #     # If an enemy gets clicked on
-            #     if True:
-            #         player.attack(enemy, all_sprites_list, bullet_list)
-
         # ALL EVENT PROCESSING SHOULD GO ABOVE THIS COMMENT
 
         # ALL GAME LOGIC SHOULD GO BELOW THIS COMMENT
