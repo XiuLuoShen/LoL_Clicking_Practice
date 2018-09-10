@@ -39,7 +39,7 @@ def main():
     player = model.model.Player(20, 20, 500, 6)
     all_sprites_list.add(player)
 
-    enemy = model.model.Enemy(200, 200, 4, player)
+    enemy = model.model.Enemy(200, 200, 1, player)
     all_sprites_list.add(enemy)
     enemy_sprite_list = pygame.sprite.Group()
     enemy_sprite_list.add(enemy)
@@ -54,7 +54,13 @@ def main():
                 done = True
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if pygame.mouse.get_pressed()[2]:
-                    player.update_move(pygame.mouse.get_pos())
+                    x, y = pygame.mouse.get_pos()
+                    # If an enemy sprite was clicked on
+                    if enemy_sprite_list.sprites()[0].rect.collidepoint(x, y):
+                        if not player.attack(enemy_sprite_list.sprites()[0], all_sprites_list, bullet_list):
+                            player.update_move([x, y])
+                    else:
+                        player.update_move([x,y])
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
                     # Attack the closest enemy in attack range otherwise continue
@@ -85,7 +91,7 @@ def main():
                 if enemy.hp == 0:
                     enemy.kill()
                     new_enemy = model.model.Enemy(random.randrange(1, SCREEN_WIDTH), random.randrange(1, SCREEN_HEIGHT),
-                                                  4, player)
+                                                  1, player)
                     enemy_sprite_list.add(new_enemy)
                     all_sprites_list.add(new_enemy)
                     break

@@ -115,24 +115,37 @@ class Player(Champion):
         self.change_y = 0
 
     def attack(self, enemy, sprite_list, bullet_list):
-        # Stop
-        self.stop()
+        if self.attackable(enemy):
+            # Stop
+            self.stop()
+            # Shoot bullet
+            shot = Bullet(self, enemy)
+            sprite_list.add(shot)
+            bullet_list.add(shot)
+            return True
+        else:
+            return False
 
-        # Shoot bullet
-        shot = Bullet(self, enemy)
-        sprite_list.add(shot)
-        bullet_list.add(shot)
-
-    def attackable(self, enemy_sprite_list):
-        closest_distance = self.range
-        closest_enemy = None
-        for enemy in enemy_sprite_list:
+    def attackable(self, enemy):
+        # if enemy is a Group, cycle through each enemy in the group and return closest one
+        if type(enemy) == pygame.sprite.Group:
+            closest_distance = self.range
+            closest_enemy = None
+            for sprite in enemy:
+                # Not making the next 3 lines of function in order to improve runtime slightly
+                x_dist = self.rect.centerx - sprite.rect.centerx
+                y_dist = self.rect.centery - sprite.rect.centery
+                dist = sqrt(x_dist**2 + y_dist**2)
+                if dist < closest_distance:
+                    closest_enemy = sprite
+            return closest_enemy
+        else:
             x_dist = self.rect.centerx - enemy.rect.centerx
             y_dist = self.rect.centery - enemy.rect.centery
-            dist = sqrt(x_dist**2 + y_dist**2)
-            if dist < closest_distance:
-                closest_enemy = enemy
-        return closest_enemy
+            dist = sqrt(x_dist ** 2 + y_dist ** 2)
+            # if Enemy is in attack range
+            if dist < self.range:
+                return True
 
 
 class Bullet(pygame.sprite.Sprite):
