@@ -64,7 +64,7 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
                     # Attack the closest enemy in attack range otherwise continue
-                    can_attack = player.attackable(enemy_sprite_list)
+                    can_attack = player.closestAttackableEnemy(enemy_sprite_list)
                     if can_attack is not None:
                         player.attack(can_attack, all_sprites_list, bullet_list)
 
