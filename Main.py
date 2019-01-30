@@ -45,6 +45,7 @@ def main():
     enemy_sprite_list.add(enemy)
 
     bullet_list = pygame.sprite.Group()
+    attack_move_pressed = False
 
     # -------- Main Program Loop -----------
     while not done:
@@ -61,12 +62,18 @@ def main():
                             player.update_move([x, y])
                     else:
                         player.update_move([x,y])
+                elif pygame.mouse.get_pressed()[0]:
+                    if attack_move_pressed:
+                        # Attack the closest enemy in attack range otherwise continue
+                        can_attack = model.model.closestSprite(enemy_sprite_list, pygame.mouse.get_pos(), player.range)
+                        if can_attack is not None:
+                            player.attack(can_attack, all_sprites_list, bullet_list)
+                attack_move_pressed = False
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
-                    # Attack the closest enemy in attack range otherwise continue
-                    can_attack = player.closestAttackableEnemy(enemy_sprite_list)
-                    if can_attack is not None:
-                        player.attack(can_attack, all_sprites_list, bullet_list)
+                    attack_move_pressed = True
+
 
         # ALL EVENT PROCESSING SHOULD GO ABOVE THIS COMMENT
 
@@ -98,13 +105,14 @@ def main():
         screen.fill(WHITE)
 
         all_sprites_list.draw(screen)
+
         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
 
         # Go ahead and update the screen with what we've drawn.
         pygame.display.flip()
 
-        # Limit to 60 frames per second
-        clock.tick(60)
+        # Limit to 120 frames per second
+        clock.tick(120)
 
     # Close the window and quit.
     # If you forget this line, the program will 'hang'

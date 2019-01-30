@@ -33,6 +33,25 @@ def determine_direction(start_x, start_y, end_x, end_y):
     return unit_x, unit_y
 
 
+def closestSprite(sprite_list, pos, range = 1920):
+    """"
+    Determines the closest sprite from sprite list to pos
+    :param sprite_list list of sprites to check distance from
+    :param pos in the form of a point (x, y) that we want to get the closest sprite to
+    :param range sprites must be kept in this range, default is largest screen width
+    """
+    closest_distance = range
+    closest_enemy = None
+    for enemy in sprite_list:
+        # Not making the next 3 lines of function in order to improve runtime slightly
+        x_dist = pos[0] - enemy.rect.centerx
+        y_dist = pos[1] - enemy.rect.centery
+        dist = sqrt(x_dist ** 2 + y_dist ** 2)
+        if dist < closest_distance:
+            closest_enemy = enemy
+    return closest_enemy
+
+
 class Champion(Sprite):
     def __init__(self, start_x, start_y, move_speed):
         """Constructor function"""
@@ -132,18 +151,6 @@ class Player(Champion):
             return True
         else:
             return False
-
-    def closestAttackableEnemy(self, enemy_sprite_list):
-        closest_distance = self.range
-        closest_enemy = None
-        for enemy in enemy_sprite_list:
-            # Not making the next 3 lines of function in order to improve runtime slightly
-            x_dist = self.rect.centerx - enemy.rect.centerx
-            y_dist = self.rect.centery - enemy.rect.centery
-            dist = sqrt(x_dist ** 2 + y_dist ** 2)
-            if dist < closest_distance:
-                closest_enemy = enemy
-        return closest_enemy
 
     def attackable(self, enemy):
         """
