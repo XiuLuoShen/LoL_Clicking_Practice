@@ -4,8 +4,10 @@
     their ability to kite and mouse control.
 """
 
-import pygame
-import model.model
+import pygame.mouse as mouse
+import pygame.sprite as sprite
+from model.model import *
+from model.camera import *
 import random
 
 
@@ -18,15 +20,20 @@ RED = (255, 0, 0)
 SCREEN_WIDTH = 1440
 SCREEN_HEIGHT = 720
 
+
 def main():
     """ Main function for the game. """
     pygame.init()
 
     # Set the width and height of the screen [width,height]
-    size = [SCREEN_WIDTH, SCREEN_HEIGHT]
-    screen = pygame.display.set_mode(size)
+    screen_size = [SCREEN_WIDTH, SCREEN_HEIGHT]
+    screen = pygame.display.set_mode(screen_size)
 
     pygame.display.set_caption("My Game")
+    bgImg = pygame.image.load("grid-background.png").convert()
+    #Image size is 1920 x 1080
+    screen_offset = [(SCREEN_WIDTH - bgImg.get_width())/2, (SCREEN_HEIGHT - bgImg.get_height())/2]
+    screen.blit(bgImg, screen_offset)
 
     # Loop until the user clicks the close button.
     done = False
@@ -34,17 +41,17 @@ def main():
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
 
-    all_sprites_list = pygame.sprite.Group()
+    all_sprites_list = sprite.Group()
 
-    player = model.model.Player(20, 20, 500, 6)
+    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 500, 6)
     all_sprites_list.add(player)
 
-    enemy = model.model.Enemy(200, 200, 1, player)
+    enemy = Enemy(0, 0, 1, player)
     all_sprites_list.add(enemy)
-    enemy_sprite_list = pygame.sprite.Group()
+    enemy_sprite_list = sprite.Group()
     enemy_sprite_list.add(enemy)
 
-    bullet_list = pygame.sprite.Group()
+    bullet_list = sprite.Group()
     attack_move_pressed = False
 
     # -------- Main Program Loop -----------
@@ -54,26 +61,28 @@ def main():
             if event.type == pygame.QUIT:
                 done = True
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if pygame.mouse.get_pressed()[2]:
-                    x, y = pygame.mouse.get_pos()
+                x, y = mouse.get_pos()
+                if mouse.get_pressed()[2]:
                     # If an enemy sprite was clicked on
                     if enemy_sprite_list.sprites()[0].rect.collidepoint(x, y):
                         if not player.attack(enemy_sprite_list.sprites()[0], all_sprites_list, bullet_list):
                             player.update_move([x, y])
                     else:
-                        player.update_move([x,y])
-                elif pygame.mouse.get_pressed()[0]:
+                        player.update_move([x, y])
+                elif mouse.get_pressed()[0]:
                     if attack_move_pressed:
                         # Attack the closest enemy in attack range otherwise continue
-                        can_attack = model.model.closestSprite(enemy_sprite_list, pygame.mouse.get_pos(), player.range)
+                        can_attack = closestSprite(enemy_sprite_list, mouse.get_pos(), player.range)
                         if can_attack is not None:
                             player.attack(can_attack, all_sprites_list, bullet_list)
+                        else:
+                            player.update_move([x, y])
                 attack_move_pressed = False
-
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
                     attack_move_pressed = True
-
+                if event.key == pygame.K_SPACE:
+                    centerCamera(player, all_sprites_list, screen_size, screen_offset)
 
         # ALL EVENT PROCESSING SHOULD GO ABOVE THIS COMMENT
 
@@ -84,15 +93,15 @@ def main():
         # Calculate mechanics for each bullet
         for enemy in enemy_sprite_list:
             # See if it gets hit by a bullet
-            enemy_hit_list = pygame.sprite.spritecollide(enemy, bullet_list, True)
+            enemy_hit_list = sprite.spritecollide(enemy, bullet_list, True)
 
             # Remove bullet when it hits enemy
             for i in range(len(enemy_hit_list)):
                 enemy.hp -= 1
                 if enemy.hp == 0:
                     enemy.kill()
-                    new_enemy = model.model.Enemy(random.randrange(1, SCREEN_WIDTH), random.randrange(1, SCREEN_HEIGHT),
-                                                  1, player)
+                    new_enemy = Enemy(random.randrange(1, SCREEN_WIDTH), random.randrange(1, SCREEN_HEIGHT),
+                                            1, player)
                     enemy_sprite_list.add(new_enemy)
                     all_sprites_list.add(new_enemy)
                     break
@@ -103,6 +112,7 @@ def main():
         # First, clear the screen to white. Don't put other drawing commands
         # above this, or they will be erased with this command.
         screen.fill(WHITE)
+        screen.blit(bgImg, screen_offset)
 
         all_sprites_list.draw(screen)
 

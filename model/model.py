@@ -11,6 +11,7 @@ from pygame.sprite import Sprite
 GREEN = (0, 255, 0)  # player color
 RED = (255, 0, 0)  # Enemy color
 BROWN = (152, 80, 60)  # Bullet color
+WHITE = (255, 255, 255)
 
 
 def determine_direction(start_x, start_y, end_x, end_y):
@@ -169,8 +170,8 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self, player, enemy):
         super().__init__()
 
-        self.image = pygame.Surface([4, 10])
-        self.image.fill(BROWN)
+        self.image = pygame.Surface([8, 20])
+        self.image.fill(WHITE)
         self.rect = self.image.get_rect()
 
         self.rect.centerx = player.rect.centerx
