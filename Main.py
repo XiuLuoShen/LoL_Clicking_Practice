@@ -60,7 +60,9 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+                continue
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = mouse.get_pos()
                 if mouse.get_pressed()[2]:
                     # If an enemy sprite was clicked on
@@ -77,17 +79,25 @@ def main():
                             player.attack(can_attack, all_sprites_list, bullet_list)
                         else:
                             player.update_move([x, y])
+                # Reset attack move
                 attack_move_pressed = False
+
             if event.type == pygame.KEYDOWN:
+                # Attack move
                 if event.key == pygame.K_a:
                     attack_move_pressed = True
+
+                # Center camera
                 if event.key == pygame.K_SPACE:
                     centerCamera(player, all_sprites_list, screen_size, screen_offset)
 
         # ALL EVENT PROCESSING SHOULD GO ABOVE THIS COMMENT
-
         # ALL GAME LOGIC SHOULD GO BELOW THIS COMMENT
         # Game Logic
+        mouseAtScreenEdge = isMouseAtScreenEdge(screen_size, mouse.get_pos())
+        if mouseAtScreenEdge is not 0:
+            moveCamera(all_sprites_list, screen_size, screen_offset, mouseAtScreenEdge)
+
         all_sprites_list.update()
 
         # Calculate mechanics for each bullet
